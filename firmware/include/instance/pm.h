@@ -3,7 +3,7 @@
  *
  * \brief Instance description for PM
  *
- * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -40,12 +40,9 @@
  * \asf_license_stop
  *
  */
-/*
- * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
- */
 
-#ifndef _SAMD21_PM_INSTANCE_
-#define _SAMD21_PM_INSTANCE_
+#ifndef _SAMD11_PM_INSTANCE_
+#define _SAMD11_PM_INSTANCE_
 
 /* ========== Register definition for PM peripheral ========== */
 #if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -89,4 +86,4 @@
 #define PM_CTRL_MCSEL_XOSC          2       
 #define PM_PM_CLK_APB_NUM           2       
 
-#endif /* _SAMD21_PM_INSTANCE_ */
+#endif /* _SAMD11_PM_INSTANCE_ */

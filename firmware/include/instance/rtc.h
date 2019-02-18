@@ -3,7 +3,7 @@
  *
  * \brief Instance description for RTC
  *
- * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -40,12 +40,9 @@
  * \asf_license_stop
  *
  */
-/*
- * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
- */
 
-#ifndef _SAMD21_RTC_INSTANCE_
-#define _SAMD21_RTC_INSTANCE_
+#ifndef _SAMD11_RTC_INSTANCE_
+#define _SAMD11_RTC_INSTANCE_
 
 /* ========== Register definition for RTC peripheral ========== */
 #if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -117,4 +114,4 @@
 #define RTC_NUM_OF_COMP16           2        // Number of 16-bit Comparators (obsolete)
 #define RTC_NUM_OF_COMP32           1        // Number of 32-bit Comparators (obsolete)
 
-#endif /* _SAMD21_RTC_INSTANCE_ */
+#endif /* _SAMD11_RTC_INSTANCE_ */

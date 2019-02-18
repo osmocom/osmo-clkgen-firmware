@@ -3,7 +3,7 @@
  *
  * \brief Instance description for SYSCTRL
  *
- * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -40,12 +40,9 @@
  * \asf_license_stop
  *
  */
-/*
- * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
- */
 
-#ifndef _SAMD21_SYSCTRL_INSTANCE_
-#define _SAMD21_SYSCTRL_INSTANCE_
+#ifndef _SAMD11_SYSCTRL_INSTANCE_
+#define _SAMD11_SYSCTRL_INSTANCE_
 
 /* ========== Register definition for SYSCTRL peripheral ========== */
 #if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -63,7 +60,6 @@
 #define REG_SYSCTRL_DFLLMUL        (0x4000082CU) /**< \brief (SYSCTRL) DFLL48M Multiplier */
 #define REG_SYSCTRL_DFLLSYNC       (0x40000830U) /**< \brief (SYSCTRL) DFLL48M Synchronization */
 #define REG_SYSCTRL_BOD33          (0x40000834U) /**< \brief (SYSCTRL) 3.3V Brown-Out Detector (BOD33) Control */
-#define REG_SYSCTRL_VREG           (0x4000083CU) /**< \brief (SYSCTRL) Voltage Regulator System (VREG) Control */
 #define REG_SYSCTRL_VREF           (0x40000840U) /**< \brief (SYSCTRL) Voltage References System (VREF) Control */
 #define REG_SYSCTRL_DPLLCTRLA      (0x40000844U) /**< \brief (SYSCTRL) DPLL Control A */
 #define REG_SYSCTRL_DPLLRATIO      (0x40000848U) /**< \brief (SYSCTRL) DPLL Ratio Control */
@@ -84,7 +80,6 @@
 #define REG_SYSCTRL_DFLLMUL        (*(RwReg  *)0x4000082CU) /**< \brief (SYSCTRL) DFLL48M Multiplier */
 #define REG_SYSCTRL_DFLLSYNC       (*(RwReg8 *)0x40000830U) /**< \brief (SYSCTRL) DFLL48M Synchronization */
 #define REG_SYSCTRL_BOD33          (*(RwReg  *)0x40000834U) /**< \brief (SYSCTRL) 3.3V Brown-Out Detector (BOD33) Control */
-#define REG_SYSCTRL_VREG           (*(RwReg16*)0x4000083CU) /**< \brief (SYSCTRL) Voltage Regulator System (VREG) Control */
 #define REG_SYSCTRL_VREF           (*(RwReg  *)0x40000840U) /**< \brief (SYSCTRL) Voltage References System (VREF) Control */
 #define REG_SYSCTRL_DPLLCTRLA      (*(RwReg8 *)0x40000844U) /**< \brief (SYSCTRL) DPLL Control A */
 #define REG_SYSCTRL_DPLLRATIO      (*(RwReg  *)0x40000848U) /**< \brief (SYSCTRL) DPLL Ratio Control */
@@ -94,6 +89,7 @@
 
 /* ========== Instance parameters for SYSCTRL peripheral ========== */
 #define SYSCTRL_BGAP_CALIB_MSB      11      
+#define SYSCTRL_BOD12_CALIB_MSB     4       
 #define SYSCTRL_BOD33_CALIB_MSB     5       
 #define SYSCTRL_DFLL48M_COARSE_MSB  5       
 #define SYSCTRL_DFLL48M_FINE_MSB    9       
@@ -110,14 +106,14 @@
 #define SYSCTRL_VREG_LEVEL_MSB      2       
 #define SYSCTRL_BOD12_VERSION       0x111   
 #define SYSCTRL_BOD33_VERSION       0x111   
-#define SYSCTRL_DFLL48M_VERSION     0x301   
-#define SYSCTRL_FDPLL_VERSION       0x111   
+#define SYSCTRL_DFLL48M_VERSION     0x300   
+#define SYSCTRL_FDPLL_VERSION       0x110   
 #define SYSCTRL_OSCULP32K_VERSION   0x111   
 #define SYSCTRL_OSC8M_VERSION       0x120   
-#define SYSCTRL_OSC32K_VERSION      0x112   
+#define SYSCTRL_OSC32K_VERSION      0x110   
 #define SYSCTRL_VREF_VERSION        0x201   
 #define SYSCTRL_VREG_VERSION        0x201   
-#define SYSCTRL_XOSC_VERSION        0x114   
-#define SYSCTRL_XOSC32K_VERSION     0x113   
+#define SYSCTRL_XOSC_VERSION        0x112   
+#define SYSCTRL_XOSC32K_VERSION     0x111   
 
-#endif /* _SAMD21_SYSCTRL_INSTANCE_ */
+#endif /* _SAMD11_SYSCTRL_INSTANCE_ */

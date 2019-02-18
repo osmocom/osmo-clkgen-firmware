@@ -1,6 +1,6 @@
 ##############################################################################
 BUILD = build
-BIN = dgw
+BIN = osmo-clkgen
 
 ##############################################################################
 .PHONY: all directory clean size
@@ -18,7 +18,7 @@ CFLAGS += -MD -MP -MT $(BUILD)/$(*F).o -MF $(BUILD)/$(@F).d
 
 LDFLAGS += -mcpu=cortex-m0plus -mthumb
 LDFLAGS += -Wl,--gc-sections
-LDFLAGS += -Wl,--script=../linker/samd21j18.ld
+LDFLAGS += -Wl,--script=../linker/samd11d14.ld
 
 INCLUDES += \
   -I../include \
@@ -26,20 +26,14 @@ INCLUDES += \
 
 SRCS += \
   ../main.c \
-  ../i2c_master.c \
-  ../spi_master.c \
-  ../gpio.c \
-  ../dac.c \
-  ../adc.c \
-  ../pwm.c \
   ../debug.c \
   ../udc.c \
   ../usb.c \
   ../usb_descriptors.c \
-  ../startup_samd21.c
+  ../startup_samd11.c
 
 DEFINES += \
-  -D__SAMD21J18A__ \
+  -D__SAMD11D14AM__ \
   -DDONT_USE_CMSIS_INIT \
   -DF_CPU=48000000 
 
@@ -66,7 +60,7 @@ $(BUILD)/$(BIN).bin: $(BUILD)/$(BIN).elf
 	@$(CC) $(CFLAGS) $(filter %/$(subst .o,.c,$(notdir $@)), $(SRCS)) -c -o $@
 
 directory:
-	@gmkdir -p $(BUILD)
+	@mkdir -p $(BUILD)
 
 size: $(BUILD)/$(BIN).elf
 	@echo size:

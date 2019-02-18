@@ -29,7 +29,7 @@
 /*- Includes ----------------------------------------------------------------*/
 #include <stdbool.h>
 #include <string.h>
-#include "samd21.h"
+#include "samd11.h"
 #include "hal_gpio.h"
 #include "udc.h"
 #include "usb.h"

@@ -50,19 +50,19 @@
     PORT->Group[HAL_GPIO_PORT##port].OUTSET.reg = (1 << pin);			\
     (void)HAL_GPIO_##name##_set;						\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_clr(void)				\
   {										\
     PORT->Group[HAL_GPIO_PORT##port].OUTCLR.reg = (1 << pin);			\
     (void)HAL_GPIO_##name##_clr;						\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_toggle(void)				\
   {										\
     PORT->Group[HAL_GPIO_PORT##port].OUTTGL.reg = (1 << pin);			\
     (void)HAL_GPIO_##name##_toggle;						\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_write(int value)				\
   {										\
     if (value)									\
@@ -71,42 +71,41 @@
       PORT->Group[HAL_GPIO_PORT##port].OUTCLR.reg = (1 << pin);			\
     (void)HAL_GPIO_##name##_write;						\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_in(void)					\
   {										\
     PORT->Group[HAL_GPIO_PORT##port].DIRCLR.reg = (1 << pin);			\
     PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg |= PORT_PINCFG_INEN;	\
+    PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg &= ~PORT_PINCFG_PULLEN;	\
     (void)HAL_GPIO_##name##_in;							\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_out(void)				\
   {										\
     PORT->Group[HAL_GPIO_PORT##port].DIRSET.reg = (1 << pin);			\
     PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg |= PORT_PINCFG_INEN;	\
     (void)HAL_GPIO_##name##_out;						\
   }										\
-										\
-  static inline void HAL_GPIO_##name##_pullen(int state)			\
+                    \
+  static inline void HAL_GPIO_##name##_pullup(void)				\
   {										\
-    if (state)									\
-      PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg |= PORT_PINCFG_PULLEN;	\
-    else									\
-      PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg &= ~PORT_PINCFG_PULLEN;	\
-    (void)HAL_GPIO_##name##_pullen;						\
+    PORT->Group[HAL_GPIO_PORT##port].OUTSET.reg = (1 << pin);			\
+    PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg |= PORT_PINCFG_PULLEN;	\
+    (void)HAL_GPIO_##name##_pullup;						\
   }										\
-										\
+                    \
   static inline int HAL_GPIO_##name##_read(void)				\
   {										\
     return (PORT->Group[HAL_GPIO_PORT##port].IN.reg & (1 << pin)) != 0;		\
     (void)HAL_GPIO_##name##_read;						\
   }										\
-										\
+                    \
   static inline int HAL_GPIO_##name##_state(void)				\
   {										\
     return (PORT->Group[HAL_GPIO_PORT##port].DIR.reg & (1 << pin)) != 0;	\
     (void)HAL_GPIO_##name##_state;						\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_pmuxen(int mux)				\
   {										\
     PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg |= PORT_PINCFG_PMUXEN;	\
@@ -116,7 +115,7 @@
       PORT->Group[HAL_GPIO_PORT##port].PMUX[pin>>1].bit.PMUXE = mux;		\
     (void)HAL_GPIO_##name##_pmuxen;						\
   }										\
-										\
+                    \
   static inline void HAL_GPIO_##name##_pmuxdis(void)				\
   {										\
     PORT->Group[HAL_GPIO_PORT##port].PINCFG[pin].reg &= ~PORT_PINCFG_PMUXEN;	\

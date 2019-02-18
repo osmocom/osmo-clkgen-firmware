@@ -3,7 +3,7 @@
  *
  * \brief Instance description for DMAC
  *
- * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -40,12 +40,9 @@
  * \asf_license_stop
  *
  */
-/*
- * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
- */
 
-#ifndef _SAMD21_DMAC_INSTANCE_
-#define _SAMD21_DMAC_INSTANCE_
+#ifndef _SAMD11_DMAC_INSTANCE_
+#define _SAMD11_DMAC_INSTANCE_
 
 /* ========== Register definition for DMAC peripheral ========== */
 #if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -99,14 +96,14 @@
 #endif /* (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 /* ========== Instance parameters for DMAC peripheral ========== */
-#define DMAC_CH_BITS                4        // Number of bits to select channel
-#define DMAC_CH_NUM                 12       // Number of channels
+#define DMAC_CH_BITS                3        // Number of bits to select channel
+#define DMAC_CH_NUM                 6        // Number of channels
 #define DMAC_CLK_AHB_ID             5        // AHB clock index
 #define DMAC_EVIN_NUM               4        // Number of input events
 #define DMAC_EVOUT_NUM              4        // Number of output events
 #define DMAC_LVL_BITS               2        // Number of bit to select level priority
 #define DMAC_LVL_NUM                4        // Enable priority level number
-#define DMAC_TRIG_BITS              6        // Number of bits to select trigger source
-#define DMAC_TRIG_NUM               45       // Number of peripheral triggers
+#define DMAC_TRIG_BITS              5        // Number of bits to select trigger source
+#define DMAC_TRIG_NUM               20       // Number of peripheral triggers
 
-#endif /* _SAMD21_DMAC_INSTANCE_ */
+#endif /* _SAMD11_DMAC_INSTANCE_ */

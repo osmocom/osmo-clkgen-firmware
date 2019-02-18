@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Instance description for PAC2
+ * \brief Top header file for SAMD11
  *
  * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
@@ -41,19 +41,24 @@
  *
  */
 
-#ifndef _SAMD11_PAC2_INSTANCE_
-#define _SAMD11_PAC2_INSTANCE_
+#ifndef _SAMD11_
+#define _SAMD11_
 
-/* ========== Register definition for PAC2 peripheral ========== */
-#if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
-#define REG_PAC2_WPCLR             (0x42000000U) /**< \brief (PAC2) Write Protection Clear */
-#define REG_PAC2_WPSET             (0x42000004U) /**< \brief (PAC2) Write Protection Set */
+/**
+ * \defgroup SAMD11_definitions SAMD11 Device Definitions
+ * \brief SAMD11 CMSIS Definitions.
+ */
+
+#if   defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
+  #include "samd11c14a.h"
+#elif defined(__SAMD11D14AM__) || defined(__ATSAMD11D14AM__)
+  #include "samd11d14am.h"
+#elif defined(__SAMD11D14AS__) || defined(__ATSAMD11D14AS__)
+  #include "samd11d14as.h"
+#elif defined(__SAMD11D14AU__) || defined(__ATSAMD11D14AU__)
+  #include "samd11d14au.h"
 #else
-#define REG_PAC2_WPCLR             (*(RwReg  *)0x42000000U) /**< \brief (PAC2) Write Protection Clear */
-#define REG_PAC2_WPSET             (*(RwReg  *)0x42000004U) /**< \brief (PAC2) Write Protection Set */
-#endif /* (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
+  #error Library does not support the specified device.
+#endif
 
-/* ========== Instance parameters for PAC2 peripheral ========== */
-#define PAC2_WPROT_DEFAULT_VAL      0x00001000 // PAC protection mask at reset
-
-#endif /* _SAMD11_PAC2_INSTANCE_ */
+#endif /* _SAMD11_ */

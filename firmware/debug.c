@@ -31,13 +31,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "samd21.h"
+#include "samd11.h"
 #include "debug.h"
 #include "hal_gpio.h"
 
 /*- Definitions -------------------------------------------------------------*/
-HAL_GPIO_PIN(UART_TX,  A, 22)
-HAL_GPIO_PIN(UART_RX,  A, 23)
+HAL_GPIO_PIN(UART_TX,  A, 10)
+HAL_GPIO_PIN(UART_RX,  A, 11)
 
 /*- Implementations ---------------------------------------------------------*/
 
@@ -51,28 +51,28 @@ void debug_init(void)
   HAL_GPIO_UART_RX_in();
   HAL_GPIO_UART_RX_pmuxen(PORT_PMUX_PMUXE_C_Val);
 
-  PM->APBCMASK.reg |= PM_APBCMASK_SERCOM3;
+  PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0;
 
-  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(SERCOM3_GCLK_ID_CORE) |
+  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(SERCOM0_GCLK_ID_CORE) |
       GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(0);
 
-  SERCOM3->USART.CTRLA.reg =
+  SERCOM0->USART.CTRLA.reg =
       SERCOM_USART_CTRLA_DORD | SERCOM_USART_CTRLA_MODE_USART_INT_CLK |
-      SERCOM_USART_CTRLA_RXPO(1/*PAD1*/) | SERCOM_USART_CTRLA_TXPO(0/*PAD0*/);
+      SERCOM_USART_CTRLA_RXPO(3/*PAD3*/) | SERCOM_USART_CTRLA_TXPO(1/*PAD2*/);
 
-  SERCOM3->USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN |
+  SERCOM0->USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN |
       SERCOM_USART_CTRLB_CHSIZE(0/*8 bits*/);
 
-  SERCOM3->USART.BAUD.reg = (uint16_t)br;
+  SERCOM0->USART.BAUD.reg = (uint16_t)br+1;
 
-  SERCOM3->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
+  SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
 }
 
 //-----------------------------------------------------------------------------
 void debug_putc(char c)
 {
-  while (!(SERCOM3->USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE));
-  SERCOM3->USART.DATA.reg = c;
+  while (!(SERCOM0->USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE));
+  SERCOM0->USART.DATA.reg = c;
 }
 
 //-----------------------------------------------------------------------------
