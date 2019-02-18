@@ -41,6 +41,11 @@
 /*- Definitions -------------------------------------------------------------*/
 HAL_GPIO_PIN(LED,      A, 16)
 
+HAL_GPIO_PIN(I2C_SDA,  A, 22)
+HAL_GPIO_PIN(I2C_SCL,  A, 23)
+
+#define T_RISE                215e-9 // Depends on the board, actually
+
 #define APP_EP_SEND    1
 #define APP_EP_RECV    2
 
@@ -63,7 +68,7 @@ void irq_handler_tc1(void)
 {
   if (TC1->COUNT16.INTFLAG.reg & TC_INTFLAG_MC(1))
   {
-    HAL_GPIO_LED_toggle();
+//    HAL_GPIO_LED_toggle();
     TC1->COUNT16.INTFLAG.reg = TC_INTFLAG_MC(1);
   }
 }
@@ -120,6 +125,132 @@ static void sys_init(void)
       GCLK_GENCTRL_RUNSTDBY | GCLK_GENCTRL_GENEN;
   while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 }
+
+//-----------------------------------------------------------------------------
+static int i2c_init(int freq)
+{
+  int baud = ((float)F_CPU / freq - (float)F_CPU * T_RISE - 10.0) / 2.0;
+
+  if (baud < 0)
+    baud = 0;
+  else if (baud > 255)
+    baud = 255;
+
+  freq = (float)F_CPU / (2.0 * (5.0 + baud) + (float)F_CPU * T_RISE);
+
+  PM->APBCMASK.reg |= PM_APBCMASK_SERCOM1;
+
+  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(SERCOM1_GCLK_ID_CORE) |
+      GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(0);
+
+  SERCOM1->I2CM.CTRLA.reg = SERCOM_I2CM_CTRLA_SWRST;
+  while (SERCOM1->I2CM.CTRLA.reg & SERCOM_I2CM_CTRLA_SWRST);
+
+  SERCOM1->I2CM.CTRLB.reg = SERCOM_I2CM_CTRLB_SMEN;
+  while (SERCOM1->I2CM.SYNCBUSY.reg);
+
+  SERCOM1->I2CM.BAUD.reg = SERCOM_I2CM_BAUD_BAUD((uint32_t)baud);
+  while (SERCOM1->I2CM.SYNCBUSY.reg);
+
+  SERCOM1->I2CM.CTRLA.reg = SERCOM_I2CM_CTRLA_ENABLE |
+      SERCOM_I2CM_CTRLA_MODE_I2C_MASTER |
+      SERCOM_I2CM_CTRLA_SDAHOLD(3);
+  while (SERCOM1->I2CM.SYNCBUSY.reg);
+
+  SERCOM1->I2CM.STATUS.reg |= SERCOM_I2CM_STATUS_BUSSTATE(1);
+
+  HAL_GPIO_I2C_SDA_in();
+  HAL_GPIO_I2C_SDA_clr();
+  HAL_GPIO_I2C_SDA_pmuxen(PORT_PMUX_PMUXE_C_Val);
+
+  HAL_GPIO_I2C_SCL_in();
+  HAL_GPIO_I2C_SCL_clr();
+  HAL_GPIO_I2C_SCL_pmuxen(PORT_PMUX_PMUXE_C_Val);
+
+  return freq;
+}
+
+//-----------------------------------------------------------------------------
+bool i2c_tx_start(uint32_t addr)
+{
+  SERCOM1->I2CM.INTFLAG.reg = SERCOM_I2CM_INTFLAG_ERROR;
+
+  SERCOM1->I2CM.ADDR.reg = addr;
+
+  while (0 == (SERCOM1->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB) &&
+         0 == (SERCOM1->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_SB));
+
+  if (SERCOM1->I2CM.STATUS.reg & SERCOM_I2CM_STATUS_RXNACK ||
+      SERCOM1->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_ERROR)
+  {
+    SERCOM1->I2CM.CTRLB.reg |= SERCOM_I2CM_CTRLB_CMD(3);
+    return false;
+  }
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+bool i2c_tx_byte(uint8_t byte)
+{
+  SERCOM1->I2CM.DATA.reg = byte;
+
+  while (1)
+  {
+    uint8_t flags = SERCOM1->I2CM.INTFLAG.reg;
+
+    if (flags & SERCOM_I2CM_INTFLAG_MB)
+      break;
+
+    if (flags & (SERCOM_I2CM_INTFLAG_SB | SERCOM_I2CM_INTFLAG_ERROR))
+      return false;
+  }
+
+  if (SERCOM1->I2CM.STATUS.reg & SERCOM_I2CM_STATUS_RXNACK)
+  {
+    SERCOM1->I2CM.CTRLB.reg |= SERCOM_I2CM_CTRLB_CMD(3);
+    return false;
+  }
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+bool i2c_rx_byte(uint8_t *byte, bool last)
+{
+  while (1)
+  {
+    uint8_t flags = SERCOM1->I2CM.INTFLAG.reg;
+
+    if (flags & SERCOM_I2CM_INTFLAG_SB)
+      break;
+
+    if (flags & (SERCOM_I2CM_INTFLAG_MB | SERCOM_I2CM_INTFLAG_ERROR))
+      return false;
+  }
+
+  if (last)
+    SERCOM1->I2CM.CTRLB.reg |= SERCOM_I2CM_CTRLB_ACKACT | SERCOM_I2CM_CTRLB_CMD(3);
+  else
+    SERCOM1->I2CM.CTRLB.reg &= ~SERCOM_I2CM_CTRLB_ACKACT;
+
+  *byte = SERCOM1->I2CM.DATA.reg;
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+bool i2c_stop(void)
+{
+  if ((SERCOM1->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB) ||
+      (SERCOM1->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_SB))
+  {
+    SERCOM1->I2CM.CTRLB.reg |= SERCOM_I2CM_CTRLB_CMD(3);
+  }
+
+  return true;
+}
+
 #if 0
 //-----------------------------------------------------------------------------
 static uint32_t get_uint32(uint8_t *data)
@@ -187,6 +318,9 @@ void usb_configuration_callback(int config)
   (void)config;
 }
 
+void si5351c_init(void);
+bool si5351c_run(void);
+
 //-----------------------------------------------------------------------------
 int main(void)
 {
@@ -198,11 +332,27 @@ int main(void)
 
   usb_init();
 
+  i2c_init(100000);
+  si5351c_init();
+
   HAL_GPIO_LED_out();
-  HAL_GPIO_LED_clr();
+  HAL_GPIO_LED_set();
 
   while (1)
   {
+    static unsigned delay = 0;
+
+    if ( delay++ == 1000000 )
+    {
+      delay = 0;
+
+      bool externally_locked = si5351c_run();
+      if (externally_locked) {
+        HAL_GPIO_LED_clr();
+      } else {
+        HAL_GPIO_LED_set();
+      }
+    }
   }
 
   return 0;

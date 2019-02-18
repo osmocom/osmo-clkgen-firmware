@@ -30,7 +30,9 @@ SRCS += \
   ../udc.c \
   ../usb.c \
   ../usb_descriptors.c \
-  ../startup_samd11.c
+  ../startup_samd11.c \
+  ../clock_generator.c \
+  ../si5351c.c
 
 DEFINES += \
   -D__SAMD11D14AM__ \
