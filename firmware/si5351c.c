@@ -194,14 +194,14 @@ void si5351c_configure_clock_control(const enum pll_sources source)
 
   uint8_t data[] = {
     16
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
-    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_2MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
+    , SI5351C_CLK_INT_MODE  | SI5351C_CLK_PLL_SRC(pll) | SI5351C_CLK_SRC(SI5351C_CLK_SRC_MULTISYNTH_SELF) | SI5351C_CLK_IDRV(SI5351C_CLK_IDRV_8MA)
   };
   si5351c_write(data, sizeof(data));
 }
@@ -211,7 +211,7 @@ void si5351c_enable_clock_outputs(const uint_fast8_t mask)
   uint8_t data[] = { 3, ~mask };
   si5351c_write(data, sizeof(data));
 }
-#if 0
+
 void si5351c_set_int_mode(const uint_fast8_t ms_number, const uint_fast8_t on)
 {
   uint8_t data[] = {16, 0};
@@ -228,7 +228,93 @@ void si5351c_set_int_mode(const uint_fast8_t ms_number, const uint_fast8_t on)
     si5351c_write(data, 2);
   }
 }
-#endif
+
+/* GCD algo from wikipedia */
+/* http://en.wikipedia.org/wiki/Greatest_common_divisor */
+uint32_t gcd(uint32_t u, uint32_t v)
+{
+  int s;
+
+  if (!u || !v)
+    return u | v;
+
+  for (s=0; !((u|v)&1); s++) {
+    u >>= 1;
+    v >>= 1;
+  }
+
+  while (!(u&1))
+    u >>= 1;
+
+  do {
+    while (!(v&1))
+      v >>= 1;
+
+    if (u>v) {
+      uint32_t t;
+      t = v;
+      v = u;
+      u = t;
+    }
+
+    v = v - u;
+  }
+  while (v);
+
+  return u << s;
+}
+
+void si5351c_set_fractional_rate(const uint8_t ms_number, uint32_t rate_num, uint32_t rate_denom)
+{
+  const uint64_t VCO_FREQ = 800 * 1000 * 1000; /* 800 MHz */
+  uint32_t MSx_P1,MSx_P2,MSx_P3;
+  uint32_t a, b, c;
+  uint32_t rem;
+
+  /* Find best config */
+  a = (VCO_FREQ * rate_denom) / rate_num;
+
+  rem = (VCO_FREQ * rate_denom) - (a * rate_num);
+
+  if (!rem) {
+    /* Integer mode */
+    b = 0;
+    c = 1;
+  } else {
+    /* Fractional */
+    uint32_t g = gcd(rem, rate_num);
+    rem /= g;
+    rate_num /= g;
+
+    if (rate_num < (1<<20)) {
+      /* Perfect match */
+      b = rem;
+      c = rate_num;
+    } else {
+      /* Approximate */
+      c = (1<<20) - 1;
+      b = ((uint64_t)c * (uint64_t)rem) / rate_num;
+
+      g = gcd(b, c);
+      b /= g;
+      c /= g;
+    }
+  }
+
+  /* Can we enable integer mode ? */
+  if (a & 0x1 || b)
+    si5351c_set_int_mode(ms_number, 0);
+  else
+    si5351c_set_int_mode(ms_number, 1);
+
+  /* Final MS values */
+  MSx_P1 = 128*a + (128 * b/c) - 512;
+  MSx_P2 = (128*b) % c;
+  MSx_P3 = c;
+
+  si5351c_configure_multisynth(ms_number, MSx_P1, MSx_P2, MSx_P3, 0);
+}
+
 void si5351c_set_clock_source(const enum pll_sources source)
 {
   si5351c_configure_clock_control(source);

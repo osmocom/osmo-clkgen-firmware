@@ -79,7 +79,7 @@ void si5351c_configure_multisynth(const uint_fast8_t ms_number,
 void si5351c_configure_clock_control(const enum pll_sources source);
 void si5351c_enable_clock_outputs(const uint_fast8_t mask);
 void si5351c_set_int_mode(const uint_fast8_t ms_number, const uint_fast8_t on);
-
+void si5351c_set_fractional_rate(const uint8_t ms_number, uint32_t rate_num, uint32_t rate_denom);
 void si5351c_set_clock_source(const enum pll_sources source);
 enum pll_sources si5351c_activate_best_clock_source(void);
 
