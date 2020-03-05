@@ -29,6 +29,7 @@ SRCS += \
   ../clkgen/clkgen.c \
   ../clkgen/si5351c.c \
   ../i2c_master.c \
+  ../spi_master.c \
   ../main.c \
   ../uart.c \
   ../usb.c \
