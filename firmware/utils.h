@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Alex Taradov <alex@taradov.com>
+ * Copyright (c) 2016-2017, Alex Taradov <alex@taradov.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,9 @@
 
 /*- Definitions -------------------------------------------------------------*/
 #define PACK            __attribute__((packed))
+#define WEAK            __attribute__((weak))
 #define INLINE          static inline __attribute__((always_inline))
-#define LIMIT(a, b)     (((a) > (b)) ? (b) : (a))
+#define LIMIT(a, b)     (((int)(a) > (int)(b)) ? (int)(b) : (int)(a))
 
 #endif // _UTILS_H_
 

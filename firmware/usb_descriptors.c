@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Alex Taradov <alex@taradov.com>
+ * Copyright (c) 2017, Alex Taradov <alex@taradov.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,17 +33,17 @@
 #include "usb_descriptors.h"
 
 /*- Variables ---------------------------------------------------------------*/
-alignas(4) usb_device_descriptor_t usb_device_descriptor =
+const alignas(4) usb_device_descriptor_t usb_device_descriptor =
 {
   .bLength            = sizeof(usb_device_descriptor_t),
   .bDescriptorType    = USB_DEVICE_DESCRIPTOR,
-  .bcdUSB             = 0x0200,
-  .bDeviceClass       = 0x00,
-  .bDeviceSubClass    = 0x00,
-  .bDeviceProtocol    = 0x00,
+  .bcdUSB             = 0x0110,
+  .bDeviceClass       = USB_CDC_DEVICE_CLASS,
+  .bDeviceSubClass    = 0,
+  .bDeviceProtocol    = 0,
   .bMaxPacketSize0    = 64,
-  .idVendor           = 0x6666,
-  .idProduct          = 0x6666,
+  .idVendor           = 0x1d50,
+  .idProduct          = 0x6142,
   .bcdDevice          = 0x0100,
   .iManufacturer      = USB_STR_MANUFACTURER,
   .iProduct           = USB_STR_PRODUCT,
@@ -51,100 +51,124 @@ alignas(4) usb_device_descriptor_t usb_device_descriptor =
   .bNumConfigurations = 1,
 };
 
-alignas(4) usb_configuration_hierarchy_t usb_configuration_hierarchy =
+const alignas(4) usb_configuration_hierarchy_t usb_configuration_hierarchy =
 {
   .configuration =
   {
     .bLength             = sizeof(usb_configuration_descriptor_t),
     .bDescriptorType     = USB_CONFIGURATION_DESCRIPTOR,
     .wTotalLength        = sizeof(usb_configuration_hierarchy_t),
-    .bNumInterfaces      = 1,
+    .bNumInterfaces      = 2,
     .bConfigurationValue = 1,
-    .iConfiguration      = USB_STR_CONFIGURATION,
+    .iConfiguration      = 0,
     .bmAttributes        = 0x80,
     .bMaxPower           = 200, // 400 mA
   },
 
-  .interface =
+  .interface_comm =
   {
     .bLength             = sizeof(usb_interface_descriptor_t),
     .bDescriptorType     = USB_INTERFACE_DESCRIPTOR,
     .bInterfaceNumber    = 0,
     .bAlternateSetting   = 0,
-    .bNumEndpoints       = 2,
-    .bInterfaceClass     = 0x03,
-    .bInterfaceSubClass  = 0x00,
-    .bInterfaceProtocol  = 0x00,
-    .iInterface          = USB_STR_INTERFACE,
+    .bNumEndpoints       = 1,
+    .bInterfaceClass     = USB_CDC_COMM_CLASS,
+    .bInterfaceSubClass  = USB_CDC_ACM_SUBCLASS,
+    .bInterfaceProtocol  = 0,
+    .iInterface          = 0,
   },
 
-  .hid =
+  .cdc_header =
   {
-    .bLength             = sizeof(usb_hid_descriptor_t),
-    .bDescriptorType     = USB_HID_DESCRIPTOR,
-    .bcdHID              = 0x0111,
-    .bCountryCode        = 0,
-    .bNumDescriptors     = 1,
-    .bDescriptorType1    = USB_HID_REPORT_DESCRIPTOR,
-    .wDescriptorLength   = sizeof(usb_hid_report_descriptor),
+    .bFunctionalLength   = sizeof(usb_cdc_header_functional_descriptor_t),
+    .bDescriptorType     = USB_CS_INTERFACE_DESCRIPTOR,
+    .bDescriptorSubtype  = USB_CDC_HEADER_SUBTYPE,
+    .bcdCDC              = 0x0110,
+  },
+
+  .cdc_acm =
+  {
+    .bFunctionalLength   = sizeof(usb_cdc_abstract_control_managment_descriptor_t),
+    .bDescriptorType     = USB_CS_INTERFACE_DESCRIPTOR,
+    .bDescriptorSubtype  = USB_CDC_ACM_SUBTYPE,
+    .bmCapabilities      = USB_CDC_ACM_SUPPORT_LINE_REQUESTS,
+  },
+
+  .cdc_call_mgmt =
+  {
+    .bFunctionalLength   = sizeof(usb_cdc_call_managment_functional_descriptor_t),
+    .bDescriptorType     = USB_CS_INTERFACE_DESCRIPTOR,
+    .bDescriptorSubtype  = USB_CDC_CALL_MGMT_SUBTYPE,
+    .bmCapabilities      = USB_CDC_CALL_MGMT_OVER_DCI,
+    .bDataInterface      = 1,
+  },
+
+  .cdc_union =
+  {
+    .bFunctionalLength   = sizeof(usb_cdc_union_functional_descriptor_t),
+    .bDescriptorType     = USB_CS_INTERFACE_DESCRIPTOR,
+    .bDescriptorSubtype  = USB_CDC_UNION_SUBTYPE,
+    .bMasterInterface    = 0,
+    .bSlaveInterface0    = 1,
+  },
+
+  .ep_comm =
+  {
+    .bLength             = sizeof(usb_endpoint_descriptor_t),
+    .bDescriptorType     = USB_ENDPOINT_DESCRIPTOR,
+    .bEndpointAddress    = USB_IN_ENDPOINT | USB_CDC_EP_COMM,
+    .bmAttributes        = USB_INTERRUPT_ENDPOINT,
+    .wMaxPacketSize      = 64,
+    .bInterval           = 1,
+  },
+
+  .interface_data =
+  {
+    .bLength             = sizeof(usb_interface_descriptor_t),
+    .bDescriptorType     = USB_INTERFACE_DESCRIPTOR,
+    .bInterfaceNumber    = 1,
+    .bAlternateSetting   = 0,
+    .bNumEndpoints       = 2,
+    .bInterfaceClass     = USB_CDC_DATA_CLASS,
+    .bInterfaceSubClass  = 0,
+    .bInterfaceProtocol  = 0,
+    .iInterface          = 0,
   },
 
   .ep_in =
   {
     .bLength             = sizeof(usb_endpoint_descriptor_t),
     .bDescriptorType     = USB_ENDPOINT_DESCRIPTOR,
-    .bEndpointAddress    = USB_IN_ENDPOINT | 1,
-    .bmAttributes        = USB_INTERRUPT_ENDPOINT,
+    .bEndpointAddress    = USB_IN_ENDPOINT | USB_CDC_EP_SEND,
+    .bmAttributes        = USB_BULK_ENDPOINT,
     .wMaxPacketSize      = 64,
-    .bInterval           = 1,
+    .bInterval           = 0,
   },
 
   .ep_out =
   {
     .bLength             = sizeof(usb_endpoint_descriptor_t),
     .bDescriptorType     = USB_ENDPOINT_DESCRIPTOR,
-    .bEndpointAddress    = USB_OUT_ENDPOINT | 2,
-    .bmAttributes        = USB_INTERRUPT_ENDPOINT,
+    .bEndpointAddress    = USB_OUT_ENDPOINT | USB_CDC_EP_RECV,
+    .bmAttributes        = USB_BULK_ENDPOINT,
     .wMaxPacketSize      = 64,
-    .bInterval           = 1,
+    .bInterval           = 0,
   },
 };
 
-alignas(4) uint8_t usb_hid_report_descriptor[33] =
-{
-  0x06, 0x00, 0xff,  // Usage Page (Vendor Defined 0xFF00)
-  0x09, 0x01,        // Usage (0x01)
-  0xa1, 0x01,        // Collection (Application)
-  0x15, 0x00,        //   Logical Minimum (0)
-  0x26, 0xff, 0x00,  //   Logical Maximum (255)
-  0x75, 0x08,        //   Report Size (8)
-  0x95, 0x40,        //   Report Count (64)
-  0x09, 0x01,        //   Usage (0x01)
-  0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-  0x95, 0x40,        //   Report Count (64)
-  0x09, 0x01,        //   Usage (0x01)
-  0x91, 0x02,        //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-  0x95, 0x01,        //   Report Count (1)
-  0x09, 0x01,        //   Usage (0x01)
-  0xb1, 0x02,        //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-  0xc0,              // End Collection
-};
-
-alignas(4) usb_string_descriptor_zero_t usb_string_descriptor_zero =
+const alignas(4) usb_string_descriptor_zero_t usb_string_descriptor_zero =
 {
   .bLength               = sizeof(usb_string_descriptor_zero_t),
   .bDescriptorType       = USB_STRING_DESCRIPTOR,
   .wLANGID               = 0x0409, // English (United States)
 };
 
-char *usb_strings[] =
+char usb_serial_number[16];
+
+const char *usb_strings[] =
 {
   [USB_STR_MANUFACTURER]  = "sysmocom GmbH",
-  [USB_STR_PRODUCT]       = "osmo-clkgen",
-  [USB_STR_SERIAL_NUMBER] = "123456",
-  [USB_STR_CONFIGURATION] = "Main Configuration",
-  [USB_STR_INTERFACE]     = "Main Interface",
+  [USB_STR_PRODUCT]       = "osmo-clock-gen",
+  [USB_STR_SERIAL_NUMBER] = usb_serial_number,
 };
-
-alignas(4) uint8_t usb_string_descriptor_buffer[64];
 

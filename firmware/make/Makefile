@@ -9,7 +9,7 @@ CC = arm-none-eabi-gcc
 OBJCOPY = arm-none-eabi-objcopy
 SIZE = arm-none-eabi-size
 
-CFLAGS += -W -Wall --std=gnu11 -Os
+CFLAGS += -W -Wall --std=gnu11 -Og
 CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -fdata-sections -ffunction-sections
 CFLAGS += -funsigned-char -funsigned-bitfields
@@ -18,7 +18,7 @@ CFLAGS += -MD -MP -MT $(BUILD)/$(*F).o -MF $(BUILD)/$(@F).d
 
 LDFLAGS += -mcpu=cortex-m0plus -mthumb
 LDFLAGS += -Wl,--gc-sections
-LDFLAGS += -Wl,--script=../linker/samd11d14.ld
+LDFLAGS += -Wl,--script=../linker/samd21j18.ld
 
 INCLUDES += \
   -I../include \
@@ -26,18 +26,17 @@ INCLUDES += \
 
 SRCS += \
   ../main.c \
-  ../debug.c \
-  ../udc.c \
+  ../uart.c \
   ../usb.c \
+  ../usb_std.c \
+  ../usb_cdc.c \
   ../usb_descriptors.c \
-  ../startup_samd11.c \
-  ../clock_generator.c \
-  ../si5351c.c
+  ../startup_samd21.c
 
 DEFINES += \
-  -D__SAMD11D14AM__ \
+  -D__SAMD21E18A__ \
   -DDONT_USE_CMSIS_INIT \
-  -DF_CPU=48000000 
+  -DF_CPU=48000000
 
 CFLAGS += $(INCLUDES) $(DEFINES)
 
