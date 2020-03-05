@@ -39,6 +39,7 @@
 #include "uart.h"
 #include "i2c_master.h"
 #include "spi_master.h"
+#include "dac.h"
 
 /*- Definitions -------------------------------------------------------------*/
 #define USB_BUFFER_SIZE        64
@@ -300,6 +301,9 @@ int main(void)
 {
   sys_init();
   sys_time_init();
+
+  dac_init();
+  dac_write(0);
 
   i2c_init(400000);
   clkgen_init();
