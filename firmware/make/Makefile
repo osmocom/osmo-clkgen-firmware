@@ -21,10 +21,14 @@ LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -Wl,--script=../linker/samd21j18.ld
 
 INCLUDES += \
+  -I../clkgen \
   -I../include \
   -I..
 
 SRCS += \
+  ../clkgen/clkgen.c \
+  ../clkgen/si5351c.c \
+  ../i2c_master.c \
   ../main.c \
   ../uart.c \
   ../usb.c \

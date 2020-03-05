@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include "si5351c.h"
 
-void si5351c_init(void)
+void clkgen_init(void)
 {
   si5351c_enable_clock_outputs(0x00); /* Disable Outputs */
 
@@ -37,7 +37,7 @@ void si5351c_init(void)
   si5351c_enable_clock_outputs(0xff); /* Enable desired outputs */
 }
 
-bool si5351c_run(void)
+bool clkgen_run(void)
 {
   bool externally_locked = false;
 

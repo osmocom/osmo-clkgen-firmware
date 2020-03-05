@@ -22,20 +22,16 @@
 
 #include <stdbool.h>
 #include "si5351c.h"
-
-extern bool i2c_tx_start(uint32_t addr);
-extern bool i2c_tx_byte(uint8_t byte);
-extern bool i2c_rx_byte(uint8_t *byte, bool last);
-extern bool i2c_stop(void);
+#include "i2c_master.h"
 
 enum pll_sources active_clock_source;
 
 /* write to single register */
 void si5351c_write_single(uint8_t reg, uint8_t val)
 {
-  i2c_tx_start(SI5351C_I2C_ADDR);
-  i2c_tx_byte(reg);
-  i2c_tx_byte(val);
+  i2c_start(SI5351C_I2C_ADDR);
+  i2c_write_byte(reg);
+  i2c_write_byte(val);
   i2c_stop();
 }
 
@@ -45,12 +41,12 @@ uint8_t si5351c_read_single(uint8_t reg)
   uint8_t val;
 
   /* set register address with write */
-  i2c_tx_start(SI5351C_I2C_ADDR);
-  i2c_tx_byte(reg);
+  i2c_start(SI5351C_I2C_ADDR);
+  i2c_write_byte(reg);
 
   /* read the value */
-  i2c_tx_start(SI5351C_I2C_ADDR | 1);
-  i2c_rx_byte(&val, true);
+  i2c_start(SI5351C_I2C_ADDR | 1);
+  i2c_read_byte(&val, true);
   i2c_stop();
 
   return val;
@@ -64,10 +60,10 @@ void si5351c_write(uint8_t* const data, const uint_fast8_t data_count)
 {
   uint_fast8_t i;
 
-  i2c_tx_start(SI5351C_I2C_ADDR);
+  i2c_start(SI5351C_I2C_ADDR);
 
   for (i = 0; i < data_count; i++)
-    i2c_tx_byte(data[i]);
+    i2c_write_byte(data[i]);
   i2c_stop();
 }
 

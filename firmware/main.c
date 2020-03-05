@@ -37,6 +37,7 @@
 #include "nvm_data.h"
 #include "usb.h"
 #include "uart.h"
+#include "i2c_master.h"
 
 /*- Definitions -------------------------------------------------------------*/
 #define USB_BUFFER_SIZE        64
@@ -290,11 +291,18 @@ void uart_serial_state_update(int state)
   usb_cdc_set_state(state);
 }
 
+void clkgen_init(void);
+bool clkgen_run(void);
+
 //-----------------------------------------------------------------------------
 int main(void)
 {
   sys_init();
   sys_time_init();
+
+  i2c_init(400000);
+  clkgen_init();
+
   usb_init();
   usb_cdc_init();
   set_status_state(false);
