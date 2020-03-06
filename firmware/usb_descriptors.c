@@ -167,8 +167,8 @@ char usb_serial_number[16];
 
 const char *usb_strings[] =
 {
-  [USB_STR_MANUFACTURER]  = "sysmocom GmbH",
-  [USB_STR_PRODUCT]       = "osmo-clock-gen",
+  [USB_STR_MANUFACTURER]  = "sysmocom - s.f.m.c. GmbH",
+  [USB_STR_PRODUCT]       = "osmo-clock-generator",
   [USB_STR_SERIAL_NUMBER] = usb_serial_number,
 };
 
