@@ -62,7 +62,7 @@ const alignas(4) usb_configuration_hierarchy_t usb_configuration_hierarchy =
     .bConfigurationValue = 1,
     .iConfiguration      = 0,
     .bmAttributes        = 0x80,
-    .bMaxPower           = 200, // 400 mA
+    .bMaxPower           = 100, // 200 mA
   },
 
   .interface_comm =
